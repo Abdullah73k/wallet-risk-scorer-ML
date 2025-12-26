@@ -4,6 +4,7 @@ import os
 import time
 import pandas as pd
 from dotenv import load_dotenv
+from src.risk_scorer.config import DATA_DIR
 
 load_dotenv()
 
@@ -11,7 +12,7 @@ ETHERSCAN_API_KEY = os.getenv("ETHERSCAN_API_KEY")
 
 def load_scam_addresses():
     try:
-        with open("scam-address.json", "r") as f:
+        with open(DATA_DIR / "scam-address.json", "r") as f:
             return json.load(f)
     except FileNotFoundError:
         print("Error: scam-address.json not found")
@@ -153,7 +154,8 @@ for address in scam_addresses:
 # Save to CSV
 if metrics_data:
     df_result = pd.DataFrame(metrics_data)
-    df_result.to_csv("scam_dataset.csv", index=False)
-    print(f"Successfully saved {len(df_result)} records to scam_dataset.csv")
+    output_path = DATA_DIR / "scam_dataset.csv"
+    df_result.to_csv(output_path, index=False)
+    print(f"Successfully saved {len(df_result)} records to {output_path}")
 else:
-    print("No data collected.")
+    print("No data collected. ")

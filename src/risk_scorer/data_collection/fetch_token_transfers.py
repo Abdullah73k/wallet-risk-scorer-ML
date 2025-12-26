@@ -5,6 +5,7 @@ import time
 import pandas as pd
 from dotenv import load_dotenv
 from collections import Counter
+from src.risk_scorer.config import DATA_DIR
 
 load_dotenv()
 
@@ -33,7 +34,7 @@ SPAM_KEYWORDS = [
 
 def load_scam_addresses():
     try:
-        with open("scam-address.json", "r") as f:
+        with open(DATA_DIR / "scam-address.json", "r") as f:
             return json.load(f)
     except FileNotFoundError:
         print("Error: scam-address.json not found")
@@ -169,10 +170,9 @@ def main():
 
     if metrics_data:
         df_result = pd.DataFrame(metrics_data)
-        df_result.to_csv("scam-token-transfer-dataset.csv", index=False)
-        print(
-            f"Successfully saved {len(df_result)} records to scam-token-transfer-dataset.csv"
-        )
+        output_path = DATA_DIR / "scam-token-transfer-dataset.csv"
+        df_result.to_csv(output_path, index=False)
+        print(f"Successfully saved {len(df_result)} records to {output_path}")
     else:
         print("No data collected.")
 
