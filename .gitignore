@@ -1,2 +1,4 @@
 walletScorerVenv
 .env
+__pycache__/
+*.pyc
