@@ -17,6 +17,7 @@ def preProcessData(df):
     df["scam"] = True
     return df
 
+
 scam_data = preProcessData(scam_data)
 scam_token_transfer_data = preProcessData(scam_token_transfer_data)
 
