@@ -1,5 +1,4 @@
 import joblib
-import joblib
 import pandas as pd
 
 from sklearn.ensemble import RandomForestClassifier
@@ -20,6 +19,7 @@ scam_data = pd.read_csv(DATA_DIR / "scam_dataset2.csv")
 safe_data = pd.read_csv(DATA_DIR / "safe_dataset.csv")
 scam_token_transfer_data = pd.read_csv(DATA_DIR / "scam-token-transfer-dataset.csv")
 safe_token_transfer_data = pd.read_csv(DATA_DIR / "safe-token-transfer-dataset.csv")
+
 
 # 1 = true/is a a scam
 # 0 = false/is not a scam
@@ -72,8 +72,6 @@ print("processed data")
 x = combined_data.drop(columns=["address", "scam", "dormancy"])
 y = combined_data["scam"]
 
-# x = data.drop(columns=["address", "scam", "dormancy"])
-# y= data["scam"]
 
 print("split data into x and y")
 
@@ -86,7 +84,9 @@ x_train, x_test, y_train, y_test = train_test_split(
 
 print("created the training and test data set")
 
-model = RandomForestClassifier(n_estimators=300, random_state=42)
+model = RandomForestClassifier(
+    n_estimators=300, random_state=42, class_weight="balanced"
+)
 model.fit(x_train, y_train)
 
 print("trained the model")

@@ -164,7 +164,6 @@ def calculate_token_metrics(tx_list, address):
 
     # Directions
     outgoing = df[df["from"] == address_lower]
-    incoming = df[df["to"] == address_lower]
 
     total_txs = len(df)
     if total_txs == 0:

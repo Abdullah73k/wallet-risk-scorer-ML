@@ -1,10 +1,9 @@
-import requests
-import json
+from utils.fetch_data_functions import calculate_token_metrics
+from utils.fetch_data_functions import get_token_tx_history
 import os
 import time
 import pandas as pd
 from dotenv import load_dotenv
-from collections import Counter
 from src.risk_scorer.config import DATA_DIR
 
 load_dotenv()
@@ -34,90 +33,6 @@ SPAM_KEYWORDS = [
 
 def load_safe_addresses():
     return pd.read_csv(DATA_DIR / "safe_wallets.csv", header=None).iloc[:, 0].tolist()
-
-
-def get_token_tx_history(address):
-    # Etherscan endpoint for ERC20 token transfer events
-    url = f"https://api.etherscan.io/v2/api?chainid=1&module=account&action=tokentx&address={address}&startblock=0&endblock=99999999&page=1&offset=10000&sort=asc&apikey={ETHERSCAN_API_KEY_2}"
-    try:
-        response = requests.get(url)
-        data = response.json()
-
-        if data["status"] == "1":
-            return data["result"]
-        elif data["message"] == "No transactions found":
-            return []
-        else:
-            print(f"Error fetching data for {address}: {data['message']}")
-            return None
-    except Exception as e:
-        print(f"Exception for {address}: {e}")
-        return None
-
-
-def calculate_token_metrics(tx_list, address):
-    if not tx_list:
-        return None
-
-    df = pd.DataFrame(tx_list)
-
-    # Normalize address
-    address_lower = address.lower()
-    df["to"] = df["to"].str.lower()
-    df["from"] = df["from"].str.lower()
-    df["contractAddress"] = df["contractAddress"].str.lower()
-
-    # Directions
-    outgoing = df[df["from"] == address_lower]
-    incoming = df[df["to"] == address_lower]
-
-    total_txs = len(df)
-    if total_txs == 0:
-        return None
-
-    # 1. Token Diversity
-    unique_tokens = df["contractAddress"].nunique()
-
-    # 2. Stablecoin Ratio
-    stablecoin_txs = df[df["contractAddress"].isin(STABLECOIN_ADDRESSES)]
-    stablecoin_ratio = len(stablecoin_txs) / total_txs
-
-    # 3. Spam Token Ratio
-    def is_spam(row):
-        name = str(row.get("tokenName", "")).lower()
-        symbol = str(row.get("tokenSymbol", "")).lower()
-        for kw in SPAM_KEYWORDS:
-            if kw in name or kw in symbol:
-                return True
-        return False
-
-    spam_count = df.apply(is_spam, axis=1).sum()
-    spam_token_ratio = spam_count / total_txs
-
-    # 4. Repeated Dumps
-    # Max number of outgoing transactions for a single token
-    if len(outgoing) > 0:
-        token_counts = outgoing["contractAddress"].value_counts()
-        repeated_dumps = token_counts.max()
-    else:
-        repeated_dumps = 0
-
-    # 5. Airdrop-like behavior
-    # Count of unique outgoing recipients
-    if len(outgoing) > 0:
-        unique_recipients = outgoing["to"].nunique()
-    else:
-        unique_recipients = 0
-
-    return {
-        "address": address,
-        "token_diversity": unique_tokens,
-        "stablecoin_ratio": stablecoin_ratio,
-        "spam_token_ratio": spam_token_ratio,
-        "repeated_dumps": repeated_dumps,
-        "airdrop_like_behavior": unique_recipients,
-    }
-
 
 def main():
     safe_addresses = load_safe_addresses()
