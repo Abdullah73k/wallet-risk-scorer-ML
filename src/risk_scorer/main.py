@@ -1,3 +1,5 @@
+import joblib
+import joblib
 import pandas as pd
 
 from sklearn.ensemble import RandomForestClassifier
@@ -19,17 +21,20 @@ safe_data = pd.read_csv(DATA_DIR / "safe_dataset.csv")
 scam_token_transfer_data = pd.read_csv(DATA_DIR / "scam-token-transfer-dataset.csv")
 safe_token_transfer_data = pd.read_csv(DATA_DIR / "safe-token-transfer-dataset.csv")
 
-
+# 1 = true/is a a scam
+# 0 = false/is not a scam
 # cleaning data function
 def preProcessScamData(df):
     df = df.copy()
     df["scam"] = 1
     return df
 
+
 def preProcessSafeData(df):
     df = df.copy()
     df["scam"] = 0
     return df
+
 
 # label data
 scam_data = preProcessScamData(scam_data)
@@ -39,7 +44,9 @@ safe_token_transfer_data = preProcessSafeData(safe_token_transfer_data)
 
 # combine within each feature set
 data = pd.concat([scam_data, safe_data], ignore_index=True)
-token_transfer_data = pd.concat([scam_token_transfer_data, safe_token_transfer_data], ignore_index=True)
+token_transfer_data = pd.concat(
+    [scam_token_transfer_data, safe_token_transfer_data], ignore_index=True
+)
 
 print(f"data length {len(data)}")
 
@@ -55,10 +62,12 @@ print(f"data length {len(data)}")
 
 # Make sure (address, scam) is unique in each dataset first
 data_u = data.drop_duplicates(subset=["address", "scam"])
-tx_u   = token_transfer_data.drop_duplicates(subset=["address", "scam"])
+tx_u = token_transfer_data.drop_duplicates(subset=["address", "scam"])
 
 # Keep ALL addresses from both datasets
-combined_data = data_u.merge(tx_u, on=["address", "scam"], how="outer", suffixes=("_base", "_tx"))
+combined_data = data_u.merge(
+    tx_u, on=["address", "scam"], how="outer", suffixes=("_base", "_tx")
+)
 
 # If you want "empty" values, keep NaN (don’t fill here)
 # combined_data stays with NaNs where a dataset is missing
@@ -101,3 +110,5 @@ print("\nClassification report:\n", classification_report(y_test, pred, digits=4
 
 ConfusionMatrixDisplay.from_predictions(y_test, pred)
 plt.show()
+
+joblib.dump(model, "models/scam_detection_v1.joblib")
