@@ -50,16 +50,6 @@ token_transfer_data = pd.concat(
 
 print(f"data length {len(data)}")
 
-# # which addresses don't overlap
-# addresses_data = set(data["address"])
-# addresses_tx = set(token_transfer_data["address"])
-
-# print("Only in token_transfer_data:", len(addresses_tx - addresses_data))
-# print("Only in data:", len(addresses_data - addresses_tx))
-
-# # merge the two feature sets on address, keep only shared addresses
-# combined_data = data.merge(token_transfer_data, on=["address", "scam"], how="inner")
-
 # Make sure (address, scam) is unique in each dataset first
 data_u = data.drop_duplicates(subset=["address", "scam"])
 tx_u = token_transfer_data.drop_duplicates(subset=["address", "scam"])

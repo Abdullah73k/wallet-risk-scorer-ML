@@ -13,10 +13,12 @@ ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 wallets = []
 seen = set()
 
+
 def eth_blockNumber():
     url = f"https://api.etherscan.io/v2/api?apiKey={ETHERSCAN_API_KEY}&chainid=1&module=proxy&action=eth_blockNumber"
     response = requests.get(url)
     return response.json()["result"]
+
 
 latest_hex = eth_blockNumber()
 latest_block = int(latest_hex, 16)
