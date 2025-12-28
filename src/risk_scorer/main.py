@@ -62,7 +62,7 @@ print("processed data")
 # x = combined_data.drop(columns=["address"])
 # y = combined_data["scam"]
 
-x = data.drop(columns=["address", "scam"])
+x = data.drop(columns=["address", "scam", "dormancy"])
 y= data["scam"]
 
 print("split data into x and y")

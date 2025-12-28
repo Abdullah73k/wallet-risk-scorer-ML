@@ -10,7 +10,7 @@ scam["scam"] = 1
 safe["scam"] = 0
 
 df = pd.concat([scam, safe], ignore_index=True)
-X = df.drop(columns=["address", "scam"])
+X = df.drop(columns=["address", "scam", "dormancy"])
 y = df["scam"]
 
 print(f"{'Feature':<30} {'Safe (Mean)':<15} {'Scam (Mean)':<15}")
