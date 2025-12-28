@@ -43,27 +43,38 @@ token_transfer_data = pd.concat([scam_token_transfer_data, safe_token_transfer_d
 
 print(f"data length {len(data)}")
 
-# which addresses don't overlap
-addresses_data = set(data["address"])
-addresses_tx = set(token_transfer_data["address"])
+# # which addresses don't overlap
+# addresses_data = set(data["address"])
+# addresses_tx = set(token_transfer_data["address"])
 
-print("Only in token_transfer_data:", len(addresses_tx - addresses_data))
-print("Only in data:", len(addresses_data - addresses_tx))
+# print("Only in token_transfer_data:", len(addresses_tx - addresses_data))
+# print("Only in data:", len(addresses_data - addresses_tx))
 
-# merge the two feature sets on address, keep only shared addresses
-combined_data = data.merge(token_transfer_data, on=["address", "scam"], how="inner")
+# # merge the two feature sets on address, keep only shared addresses
+# combined_data = data.merge(token_transfer_data, on=["address", "scam"], how="inner")
+
+# Make sure (address, scam) is unique in each dataset first
+data_u = data.drop_duplicates(subset=["address", "scam"])
+tx_u   = token_transfer_data.drop_duplicates(subset=["address", "scam"])
+
+# Keep ALL addresses from both datasets
+combined_data = data_u.merge(tx_u, on=["address", "scam"], how="outer", suffixes=("_base", "_tx"))
+
+# If you want "empty" values, keep NaN (don’t fill here)
+# combined_data stays with NaNs where a dataset is missing
+print("combined length:", len(combined_data))
 
 # clean missing values
-combined_data = combined_data.fillna(0)
+# combined_data = combined_data.fillna(0)
 
 print("processed data")
 
 # drop address only if you truly don't need it for debugging later
-# x = combined_data.drop(columns=["address"])
-# y = combined_data["scam"]
+x = combined_data.drop(columns=["address", "scam", "dormancy"])
+y = combined_data["scam"]
 
-x = data.drop(columns=["address", "scam", "dormancy"])
-y= data["scam"]
+# x = data.drop(columns=["address", "scam", "dormancy"])
+# y= data["scam"]
 
 print("split data into x and y")
 
