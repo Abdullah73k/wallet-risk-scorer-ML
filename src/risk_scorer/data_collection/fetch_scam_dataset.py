@@ -10,6 +10,7 @@ load_dotenv()
 
 ETHERSCAN_API_KEY = os.getenv("ETHERSCAN_API_KEY")
 
+
 def load_scam_addresses():
     try:
         with open(DATA_DIR / "scam-address.json", "r") as f:
@@ -39,6 +40,7 @@ def get_tx_history(address):
     except Exception as e:
         print(f"Exception for {address}: {e}")
         return None
+
 
 def calculate_metrics(tx_list, address):
     if not tx_list:
@@ -87,7 +89,7 @@ def calculate_metrics(tx_list, address):
 
     # Advanced: Burstiness (Coefficient of Variation of inter-arrival times)
     # Sort by time just in case
-    df = df.sort_values("timeStamp") 
+    df = df.sort_values("timeStamp")
     inter_arrival_times = df["timeStamp"].diff().dropna()
 
     if len(inter_arrival_times) > 0:
@@ -148,12 +150,11 @@ for address in scam_addresses:
     if count % 10 == 0:
         print(f"Processed {count}/{len(scam_addresses)}", flush=True)
 
-    time.sleep(0.25)  # Rate limit
-
+    # time.sleep(0.25)  # Rate limit ss
 # Save to CSV
 if metrics_data:
     df_result = pd.DataFrame(metrics_data)
-    output_path = DATA_DIR / "scam_dataset.csv"
+    output_path = DATA_DIR / "scam_dataset2.csv"
     df_result.to_csv(output_path, index=False)
     print(f"Successfully saved {len(df_result)} records to {output_path}")
 else:

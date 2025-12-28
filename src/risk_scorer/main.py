@@ -14,7 +14,7 @@ from sklearn.metrics import (
 )
 import matplotlib.pyplot as plt
 
-scam_data = pd.read_csv(DATA_DIR / "scam_dataset.csv")
+scam_data = pd.read_csv(DATA_DIR / "scam_dataset2.csv")
 safe_data = pd.read_csv(DATA_DIR / "safe_dataset.csv")
 scam_token_transfer_data = pd.read_csv(DATA_DIR / "scam-token-transfer-dataset.csv")
 safe_token_transfer_data = pd.read_csv(DATA_DIR / "safe-token-transfer-dataset.csv")
@@ -41,6 +41,8 @@ safe_token_transfer_data = preProcessSafeData(safe_token_transfer_data)
 data = pd.concat([scam_data, safe_data], ignore_index=True)
 token_transfer_data = pd.concat([scam_token_transfer_data, safe_token_transfer_data], ignore_index=True)
 
+print(f"data length {len(data)}")
+
 # which addresses don't overlap
 addresses_data = set(data["address"])
 addresses_tx = set(token_transfer_data["address"])
@@ -57,8 +59,11 @@ combined_data = combined_data.fillna(0)
 print("processed data")
 
 # drop address only if you truly don't need it for debugging later
-x = combined_data.drop(columns=["address"])
-y = combined_data["scam"]
+# x = combined_data.drop(columns=["address"])
+# y = combined_data["scam"]
+
+x = data.drop(columns=["address", "scam"])
+y= data["scam"]
 
 print("split data into x and y")
 
@@ -85,5 +90,3 @@ print("\nClassification report:\n", classification_report(y_test, pred, digits=4
 
 ConfusionMatrixDisplay.from_predictions(y_test, pred)
 plt.show()
-
-# TODO: need to get a dataset of safe wallets and add them to the model training
