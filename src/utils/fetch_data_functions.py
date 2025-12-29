@@ -211,3 +211,8 @@ def calculate_token_metrics(tx_list, address):
         "repeated_dumps": repeated_dumps,
         "airdrop_like_behavior": unique_recipients,
     }
+
+def eth_blockNumber():
+    url = f"https://api.etherscan.io/v2/api?apiKey={ETHERSCAN_API_KEY}&chainid=1&module=proxy&action=eth_blockNumber"
+    response = requests.get(url)
+    return response.json()["result"]

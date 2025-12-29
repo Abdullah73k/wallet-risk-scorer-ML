@@ -1,3 +1,4 @@
+from utils.fetch_data_functions import eth_blockNumber
 from src.risk_scorer.config import DATA_DIR
 import pandas as pd
 from dotenv import load_dotenv
@@ -12,12 +13,6 @@ TARGET = 2000
 ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 wallets = []
 seen = set()
-
-
-def eth_blockNumber():
-    url = f"https://api.etherscan.io/v2/api?apiKey={ETHERSCAN_API_KEY}&chainid=1&module=proxy&action=eth_blockNumber"
-    response = requests.get(url)
-    return response.json()["result"]
 
 
 latest_hex = eth_blockNumber()
