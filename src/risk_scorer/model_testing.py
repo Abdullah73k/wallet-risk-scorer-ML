@@ -55,8 +55,8 @@ def check_wallet(address):
         confidence_in_prediction = (1 - scam_prob) * 100
     return prediction, confidence_in_prediction
 
-"0x6598a3f7c9583F4aa830e26589d41C05F7008b28"
-print(check_wallet("0x49488350B4B2Ed2Fd164dd0d50B00E7E3F531651")) # known phishing scam found on etherscan
+"0x6598a3f7c9583F4aa830e26589d41C05F7008b28" # known phishing scam found on etherscan
+print(check_wallet("0x3845d967c4637ad2fa6c2715e9f1052662ec348d")) 
 
 for index, wallet in enumerate(test_wallets):
     if index == 5:
