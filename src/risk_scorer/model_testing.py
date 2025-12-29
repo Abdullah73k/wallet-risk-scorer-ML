@@ -19,18 +19,16 @@ results = []
 model = joblib.load("models/scam_detection_v1.joblib")
 
 
-for index, wallet in enumerate(test_wallets):
-    if index == 5:
-        break
-    tx_history = get_tx_history(wallet)
-    metrics = calculate_metrics(tx_history, wallet)
+def check_wallet(address):
+    tx_history = get_tx_history(address)
+    metrics = calculate_metrics(tx_history, address)
 
-    token_tx_history = get_token_tx_history(wallet)
-    token_metrics = calculate_token_metrics(token_tx_history, wallet)
+    token_tx_history = get_token_tx_history(address)
+    token_metrics = calculate_token_metrics(token_tx_history, address)
 
     if metrics is None or token_metrics is None:
-        print(f"Skipping {wallet}: Insufficient data (No transactions found)")
-        continue
+        print(f"Skipping {address}: Insufficient data (No transactions found)")
+        return None, None
 
     token_data = pd.DataFrame([token_metrics])
     metrics_data = pd.DataFrame([metrics])
@@ -55,6 +53,19 @@ for index, wallet in enumerate(test_wallets):
     else:
         prediction = "SAFE"
         confidence_in_prediction = (1 - scam_prob) * 100
+    return prediction, confidence_in_prediction
+
+"0x6598a3f7c9583F4aa830e26589d41C05F7008b28"
+print(check_wallet("0x49488350B4B2Ed2Fd164dd0d50B00E7E3F531651")) # known phishing scam found on etherscan
+
+for index, wallet in enumerate(test_wallets):
+    if index == 5:
+        break
+    prediction, confidence_in_prediction = check_wallet(wallet)
+
+    if prediction is None:
+        continue
+
     print(f"Address: {wallet}")
     print(f"Prediction: {prediction}")
     print(f"Confidence: {confidence_in_prediction:.2f}%")

@@ -28,3 +28,6 @@ res = sorted(zip(X.columns, clf.feature_importances_), key=lambda x: x[1], rever
 print("\nFeature Importance:")
 for k, v in res:
     print(f"{k:<30} {v:.4f}")
+"""
+wrekkoijiohjljnnjjnkjknjjnmmmmfxszdx  kjklklklbhbhbhbbhbhpsdiwv
+"""
