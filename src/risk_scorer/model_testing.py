@@ -41,12 +41,20 @@ for index, wallet in enumerate(test_wallets):
 
     data_for_prediction = data.drop(columns=["address", "dormancy"], errors="ignore")
     data_for_prediction = data_for_prediction[model.feature_names_in_]
-    result = model.predict(data_for_prediction)
 
-    if result == 0:
-        result = False
+    # result = model.predict(data_for_prediction)
+
+    probabilities = model.predict_proba(data_for_prediction)
+
+    scam_prob = probabilities[0][1]  # e.g., 0.08
+
+    # Logic: If it's < 50%, the confidence is (1 - 0.08) = 0.92 or 92%
+    if scam_prob > 0.5:
+        prediction = "SCAM"
+        confidence_in_prediction = scam_prob * 100
     else:
-        result = True
-    results.append({"address": wallet, "isScam": result})
-    print(f"address: {wallet}")
-    print(f"is scam: {result}")
+        prediction = "SAFE"
+        confidence_in_prediction = (1 - scam_prob) * 100
+    print(f"Address: {wallet}")
+    print(f"Prediction: {prediction}")
+    print(f"Confidence: {confidence_in_prediction:.2f}%")
