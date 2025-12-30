@@ -1,7 +1,5 @@
 import pandas as pd
-
 import os
-import pandas as pd
 from dotenv import load_dotenv
 from src.risk_scorer.config import DATA_DIR
 from src.utils.fetch_data_functions import get_tx_history, calculate_metrics
