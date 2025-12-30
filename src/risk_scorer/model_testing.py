@@ -16,7 +16,7 @@ def load_safe_addresses():
 test_wallets = load_safe_addresses()
 results = []
 
-model = joblib.load("models/scam_detection_v1.joblib")
+model = joblib.load("models/xgboost_optimized_v4.joblib")
 
 
 def check_wallet(address):
@@ -69,4 +69,3 @@ for index, wallet in enumerate(test_wallets):
     print(f"Address: {wallet}")
     print(f"Prediction: {prediction}")
     print(f"Confidence: {confidence_in_prediction:.2f}%")
-

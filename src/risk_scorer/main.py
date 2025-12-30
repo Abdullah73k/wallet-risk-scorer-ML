@@ -2,7 +2,6 @@ from sklearn.model_selection._validation import cross_val_predict
 import joblib
 import pandas as pd
 
-from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 from src.risk_scorer.config import DATA_DIR
 
@@ -12,7 +11,7 @@ from sklearn.metrics import (
 )
 import matplotlib.pyplot as plt
 
-from sklearn.model_selection import StratifiedKFold, cross_val_score
+from sklearn.model_selection import StratifiedKFold, cross_val_score, RandomizedSearchCV
 import numpy as np
 
 scam_data = pd.read_csv(DATA_DIR / "scam_dataset2.csv")
@@ -77,28 +76,41 @@ y = combined_data["scam"]
 
 print("split data into x and y")
 
-# one hot encode all object columns
-# x = pd.get_dummies(x, drop_first=True)
-
-# x_train, x_test, y_train, y_test = train_test_split(
-#     x, y, test_size=0.3, random_state=42
-# )
 
 print("created the training and test data set")
 
-# model = RandomForestClassifier(
-#     n_estimators=300, random_state=42, class_weight="balanced"
-# )
 
-# specific parameters can be tuned later
-model = XGBClassifier(
-    n_estimators=300,
-    learning_rate=0.1,    # Step size shrinkage used in update to prevents overfitting
-    max_depth=5,          # Maximum depth of a tree
-    random_state=42,
-    eval_metric='logloss' # Removes warning about default metric
+xgb = XGBClassifier(
+    random_state=42, 
+    eval_metric='logloss'
 )
-# model.fit(x_train, y_train)
+# 2. Define the range of parameters to test
+param_dist = {
+    'n_estimators': [100, 300, 500, 700],        # Number of trees
+    'learning_rate': [0.01, 0.05, 0.1, 0.2],     # Speed of learning (lower is slower but more precise)
+    'max_depth': [3, 4, 5, 6, 8],                # Depth of each tree
+    'subsample': [0.7, 0.8, 0.9, 1.0],           # % of rows to use for each tree (prevents overfitting)
+    'colsample_bytree': [0.7, 0.8, 0.9, 1.0],    # % of columns to use for each tree
+    'scale_pos_weight': [1, 2, 5]                # Weight for "Scam" class if it's rare (Imbalanced data)
+}
+# 3. Setup the search
+random_search = RandomizedSearchCV(
+    estimator=xgb,
+    param_distributions=param_dist,
+    n_iter=20,           # Try 20 different random combinations
+    scoring='accuracy',  # Or 'f1', 'roc_auc'
+    n_jobs=-1,           # Use all CPU cores
+    cv=5,                # 5-Fold Cross Validation for each try
+    verbose=1,
+    random_state=42
+)
+print("Starting Hyperparameter Tuning... this might take a minute.")
+random_search.fit(x, y)
+# 4. Get the best results
+print(f"Best Parameters Found: {random_search.best_params_}")
+print(f"Best Accuracy: {random_search.best_score_ * 100:.2f}%")
+# 5. Use the best model for your final save
+model = random_search.best_estimator_
 
 skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 print("Starting Stratified K-Fold Cross-Validation (K=5)...")
@@ -126,5 +138,4 @@ ConfusionMatrixDisplay.from_predictions(y, y_pred)
 plt.title("Confusion Matrix (Cross-Validation)")
 plt.show()
 
-model.fit(x, y)
-joblib.dump(model, "models/xgboost_scam_detection_v3.joblib")
+joblib.dump(model, "models/xgboost_optimized_v4.joblib")
