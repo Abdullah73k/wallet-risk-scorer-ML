@@ -3,15 +3,11 @@ import joblib
 import pandas as pd
 
 from sklearn.ensemble import RandomForestClassifier
-
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-
+from xgboost import XGBClassifier
 from src.risk_scorer.config import DATA_DIR
 
 from sklearn.metrics import (
     classification_report,
-    confusion_matrix,
     ConfusionMatrixDisplay,
 )
 import matplotlib.pyplot as plt
@@ -90,13 +86,22 @@ print("split data into x and y")
 
 print("created the training and test data set")
 
-model = RandomForestClassifier(
-    n_estimators=300, random_state=42, class_weight="balanced"
+# model = RandomForestClassifier(
+#     n_estimators=300, random_state=42, class_weight="balanced"
+# )
+
+# specific parameters can be tuned later
+model = XGBClassifier(
+    n_estimators=300,
+    learning_rate=0.1,    # Step size shrinkage used in update to prevents overfitting
+    max_depth=5,          # Maximum depth of a tree
+    random_state=42,
+    eval_metric='logloss' # Removes warning about default metric
 )
 # model.fit(x_train, y_train)
 
 skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-print(f"Starting Stratified K-Fold Cross-Validation (K=5)...")
+print("Starting Stratified K-Fold Cross-Validation (K=5)...")
 # 3. Run the Evaluation
 # This automatically splits x/y, trains, predicts, and scores 5 times.
 cv_scores = cross_val_score(model, x, y, cv=skf, scoring='accuracy')
@@ -122,4 +127,4 @@ plt.title("Confusion Matrix (Cross-Validation)")
 plt.show()
 
 model.fit(x, y)
-joblib.dump(model, "models/scam_detection_v2.joblib")
+joblib.dump(model, "models/xgboost_scam_detection_v3.joblib")

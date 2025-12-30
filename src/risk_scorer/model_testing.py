@@ -69,3 +69,4 @@ for index, wallet in enumerate(test_wallets):
     print(f"Address: {wallet}")
     print(f"Prediction: {prediction}")
     print(f"Confidence: {confidence_in_prediction:.2f}%")
+
