@@ -22,8 +22,6 @@ count = 0
 
 for address, current_flag in zip(addresses, flag):
     print(address)
-    if count == 5:
-        break
     tx_list = get_token_tx_history(address)
 
     if tx_list is not None:

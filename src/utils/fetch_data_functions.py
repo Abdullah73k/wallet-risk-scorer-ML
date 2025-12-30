@@ -7,6 +7,7 @@ import pandas as pd
 load_dotenv()
 
 ETHERSCAN_API_KEY = os.getenv("ETHERSCAN_API_KEY")
+ETHERSCAN_API_KEY_2 = os.getenv("ETHERSCAN_API_KEY_2")
 
 # Common Stablecoin Addresses (Mainnet)
 STABLECOIN_ADDRESSES = {
@@ -30,7 +31,7 @@ SPAM_KEYWORDS = [
 
 
 def get_tx_history(address):
-    url = f"https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlist&address={address}&startblock=0&endblock=99999999&page=1&offset=10000&sort=asc&apikey={ETHERSCAN_API_KEY}"
+    url = f"https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlist&address={address}&startblock=0&endblock=99999999&page=1&offset=10000&sort=asc&apikey={ETHERSCAN_API_KEY_2}"
     try:
         response = requests.get(url)
         data = response.json()
