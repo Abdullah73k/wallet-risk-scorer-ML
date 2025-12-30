@@ -46,6 +46,7 @@ def get_tx_history(address):
         print(f"Exception for {address}: {e}")
         return None
 
+
 def calculate_metrics(tx_list, address):
     if not tx_list:
         return None
@@ -132,6 +133,7 @@ def calculate_metrics(tx_list, address):
         "failed_tx_ratio": failed_tx_ratio,
     }
 
+
 def get_token_tx_history(address):
     # Etherscan endpoint for ERC20 token transfer events
     url = f"https://api.etherscan.io/v2/api?chainid=1&module=account&action=tokentx&address={address}&startblock=0&endblock=99999999&page=1&offset=10000&sort=asc&apikey={ETHERSCAN_API_KEY}"
@@ -149,6 +151,7 @@ def get_token_tx_history(address):
     except Exception as e:
         print(f"Exception for {address}: {e}")
         return None
+
 
 def calculate_token_metrics(tx_list, address):
     if not tx_list:
@@ -211,6 +214,7 @@ def calculate_token_metrics(tx_list, address):
         "repeated_dumps": repeated_dumps,
         "airdrop_like_behavior": unique_recipients,
     }
+
 
 def eth_blockNumber():
     url = f"https://api.etherscan.io/v2/api?apiKey={ETHERSCAN_API_KEY}&chainid=1&module=proxy&action=eth_blockNumber"

@@ -1,35 +1,8 @@
 from utils.fetch_data_functions import calculate_token_metrics
 from utils.fetch_data_functions import get_token_tx_history
-import os
 import time
 import pandas as pd
-from dotenv import load_dotenv
 from src.risk_scorer.config import DATA_DIR
-
-load_dotenv()
-
-ETHERSCAN_API_KEY_2 = os.getenv("ETHERSCAN_API_KEY_2")
-
-# Common Stablecoin Addresses (Mainnet)
-STABLECOIN_ADDRESSES = {
-    "0xdac17f958d2ee523a2206206994597c13d831ec7",  # USDT
-    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",  # USDC
-    "0x6b175474e89094c44da98b954eedeac495271d0f",  # DAI
-}
-
-# Simple keywords often found in spam tokens (very basic heuristic)
-SPAM_KEYWORDS = [
-    "visit",
-    "http",
-    "www.",
-    ".com",
-    "claim",
-    "prize",
-    "airdrop",
-    "access",
-    "reward",
-]
-
 
 def load_safe_addresses():
     return pd.read_csv(DATA_DIR / "safe_wallets.csv", header=None).iloc[:, 0].tolist()
