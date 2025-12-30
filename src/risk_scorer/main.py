@@ -40,6 +40,20 @@ def preProcessSafeData(df):
 # label data
 scam_data = preProcessScamData(scam_data)
 safe_data = preProcessSafeData(safe_data)
+
+
+scam_tx_count = scam_data["tx_count"]
+safe_tx_count = safe_data["tx_count"]
+
+scam_active_days = scam_data["active_days"]
+safe_active_days = safe_data["active_days"]
+
+for i, tx in enumerate(scam_tx_count):
+    scam_data.at[i, "transaction_frequency"] = tx / scam_active_days[i]
+
+for i, tx in enumerate(safe_tx_count):
+    safe_data.at[i, "transaction_frequency"] = tx / safe_active_days[i]
+
 scam_token_transfer_data = preProcessScamData(scam_token_transfer_data)
 safe_token_transfer_data = preProcessSafeData(safe_token_transfer_data)
 
@@ -138,4 +152,4 @@ ConfusionMatrixDisplay.from_predictions(y, y_pred)
 plt.title("Confusion Matrix (Cross-Validation)")
 plt.show()
 
-joblib.dump(model, "models/xgboost_optimized_v4.joblib")
+joblib.dump(model, "models/xgboost_optimized_v5.joblib")
