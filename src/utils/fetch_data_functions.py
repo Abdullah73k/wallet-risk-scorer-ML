@@ -120,6 +120,20 @@ def calculate_metrics(tx_list, address):
     failed_txs = df[df["isError"] == 1]
     failed_tx_ratio = len(failed_txs) / tx_count
 
+    # Time-based patterns
+    df["datetime"] = pd.to_datetime(df["timeStamp"], unit="s")
+    df["hour"] = df["datetime"].dt.hour
+
+    # Unique Active Hours (Variability)
+    unique_active_hours = df["hour"].nunique()
+
+    # Time Concentration
+    if tx_count > 0:
+        most_active_hour_count = df["hour"].value_counts().max()
+        time_concentration = most_active_hour_count / tx_count
+    else:
+        time_concentration = 0
+
     return {
         "address": address,
         "tx_count": tx_count,
@@ -132,6 +146,8 @@ def calculate_metrics(tx_list, address):
         "unique_counterparties": unique_counterparties,
         "contract_interaction_ratio": contract_interaction_ratio,
         "failed_tx_ratio": failed_tx_ratio,
+        "unique_active_hours": unique_active_hours,
+        "time_concentration": time_concentration,
     }
 
 
