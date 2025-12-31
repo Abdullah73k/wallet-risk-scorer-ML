@@ -56,10 +56,10 @@ def check_wallet(address):
     return prediction, confidence_in_prediction
 
 "0x6598a3f7c9583F4aa830e26589d41C05F7008b28" # known phishing scam found on etherscan
-print(check_wallet("0x3845d967c4637ad2fa6c2715e9f1052662ec348d")) 
+print(check_wallet("0x8A6b91DfeB352511fc3EeE3C24Ba4B88AF1Bc526")) 
 
 for index, wallet in enumerate(test_wallets):
-    if index == 5:
+    if index == 20:
         break
     prediction, confidence_in_prediction = check_wallet(wallet)
 
